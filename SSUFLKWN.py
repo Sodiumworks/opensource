@@ -19,12 +19,22 @@ import subprocess
 import random
 import pathlib
 
+varCurrentVersion = 1.0
+
 while(1):
+    print("Sodiumworks Flashkey ver " + str(varCurrentVersion) + "\n")
+    
     exePath = pathlib.Path(__file__).parent.absolute()
     os.chdir(exePath)
     
+    varAppdata = os.getenv("appdata")
+    varLocalAppdata = os.getenv("localappdata")
+    
+    if os.path.isdir(varLocalAppdata + "\\SSUFLKWN") == False:
+        os.mkdir(varLocalAppdata + "\\SSUFLKWN")
+    
     #USB key file setup
-    if not os.path.exists("settingKeyfile"):
+    if not os.path.exists(varLocalAppdata + "\\SSUFLKWN\\settingKeyfile"):
         keyCharacters = "abcdefghijklmnopqrstuvwxyz0123456789"
         counter = 0
         fileSettingKeyfileName = ""
@@ -52,7 +62,7 @@ while(1):
         fileKeyfile = open(whereToSaveKey + ":/" + fileSettingKeyfileName, "w")
         fileKeyfile.close()
         
-        fileSettingKeyfile = open("settingKeyfile", "w")
+        fileSettingKeyfile = open(varLocalAppdata + "\\SSUFLKWN\\settingKeyfile", "w")
         fileSettingKeyfile.write(str(fileSettingKeyfileName))
         fileSettingKeyfile.close()
         system("cls")
@@ -65,12 +75,12 @@ while(1):
         print("\n")
         
     else:
-        fileSettingKeyfile = open("settingKeyfile", "r")
+        fileSettingKeyfile = open(varLocalAppdata + "\\SSUFLKWN\\settingKeyfile", "r")
         fileSettingKeyfileName = fileSettingKeyfile.read()
         fileSettingKeyfile.close()
         
     #Registry setup
-    if not os.path.exists("settingAutostart"):
+    if not os.path.exists(varLocalAppdata + "\\SSUFLKWN\\settingAutostart"):
         settingAutostart = ""
         while settingAutostart == "":
             system("cls")
@@ -78,8 +88,6 @@ while(1):
             
             #regCurrentUser = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
             #regRunKey = winreg.OpenKey(regCurrentUser, r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\", 0, winreg.KEY_SET_VALUE)
-            
-            varAppdata = os.getenv("appdata")
             
             if settingAutostart == ("y" or "Y"):
                 fileCurrentPath = os.path.dirname(os.path.realpath(__file__))
@@ -100,13 +108,13 @@ while(1):
                 print("Wrong input. Type y or n.")
                 settingAutostart = ""
             
-            fileSettingAutostart = open("settingAutostart", "w")
+            fileSettingAutostart = open(varLocalAppdata + "\\SSUFLKWN\\settingAutostart", "w")
             fileSettingAutostart.close()
     
     counter = 0
     
     system("cls")
-    print("The program is now running.\nIf you remove the drive with the key, the computer will lock\nuntil you plug it back again.\n\nTo change settings, delete the deleteToChangeFlashkeySettings file in the drive\nthat has your key file while this program is still running.\nBe careful not to delete your key file.\n\nThis program needs to be running in the background to function, so just minimize it.")
+    print("Sodiumworks Flashkey ver " + str(varCurrentVersion) + "\nThe program is now running.\nIf you remove the drive with the key, the computer will lock\nuntil you plug it back again.\n\nTo change settings, delete the deleteToChangeFlashkeySettings file in the drive\nthat has your key file while this program is still running.\nBe careful not to delete your key file.\n\nThis program needs to be running in the background to function, so just minimize it.")
     while(1):
         listDrives = win32api.GetLogicalDriveStrings()
         listDrives = listDrives.split("\000")[:-1]
@@ -132,16 +140,16 @@ while(1):
     while pause == "":
         pause = input("\n\nWhat setting do you want to change? (A = Autostart, K = Key file):")
         if pause == ("a" or "A"):
-            if os.path.isfile("settingAutostart"):
-                os.remove("settingAutostart")
+            if os.path.isfile(varLocalAppdata + "\\SSUFLKWN\\settingAutostart"):
+                os.remove(varLocalAppdata + "\\SSUFLKWN\\settingAutostart")
             fileSETTINGCHANGER = open(listDrives[counter] + "deleteToChangeFlashkeySettings", "w")
             fileSETTINGCHANGER.close()
             break
         elif pause == ("k" or "K"):
             pause = input("\nWarning: Doing this will render the current key obsolete, thus it'll be deleted.\nDo you want to continue? (Y/N)")
             if pause == ("y" or "Y"):
-                if os.path.isfile("settingKeyfile"):
-                    os.remove("settingKeyfile")
+                if os.path.isfile(varLocalAppdata + "\\SSUFLKWN\\settingKeyfile"):
+                    os.remove(varLocalAppdata + "\\SSUFLKWN\\settingKeyfile")
                     os.remove(listDrives[counter] + fileSettingKeyfileName)
                     fileSETTINGCHANGER = open(listDrives[counter] + "deleteToChangeFlashkeySettings", "w")
                     fileSETTINGCHANGER.close()
