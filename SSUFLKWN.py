@@ -10,6 +10,7 @@
 #Thanks: https://pypi.org/project/auto-py-to-exe
 #Thanks: https://www.pyinstaller.org
 #Thanks: https://github.com/mhammond/pywin32
+#Thanks: https://pypi.org/project/keyboard/
 #Thanks: Python Software Foundation
 
 import win32api
