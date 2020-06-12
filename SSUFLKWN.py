@@ -24,7 +24,7 @@ import keyboard
 #import time
 #import platform
 
-varCurrentVersion = 1.0
+varCurrentVersion = 1.1
 """
 if platform.release() == "10":
     isWindows10 = True
@@ -90,7 +90,7 @@ while(1):
         fileSettingKeyfileName = fileSettingKeyfile.read()
         fileSettingKeyfile.close()
         
-    #Registry setup
+    #Autostart setup
     if not os.path.exists(varLocalAppdata + "\\SSUFLKWN\\settingAutostart"):
         settingAutostart = ""
         while settingAutostart == "":
@@ -106,7 +106,7 @@ while(1):
                 
                 if (os.path.exists(varAppdata + "\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\SSUFLKWN.bat")) == False:
                     fileStartupBat = open(varAppdata + "\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\SSUFLKWN.bat","w")
-                    fileStartupBat.write("@echo off\ncd /d " + fileCurrentPath + "\nstart \"\" \"SSUFLKWN.exe\"")
+                    fileStartupBat.write("@echo off\nif not exist \"" + fileCurrentPath + "\\SSUFLKWN.exe\" del \"%~f0\"\ncd /d \"" + fileCurrentPath + "\"\nstart \"\" \"SSUFLKWN.exe\"")
                     fileStartupBat.close()
                 
                 #winreg.SetValueEx(regRunKey, "SSUFLKWN",0,winreg.REG_SZ, fileCurrentPathFinal)
@@ -203,3 +203,4 @@ while(1):
             print("Wrong input. Type a or k.")
             pause = ""
     print("\n\n\n")
+
