@@ -1,6 +1,7 @@
-#Sodiumworks Flashkey for Windows (SSUFLKWN) v1.0
+#Sodiumworks Flashkey for Windows (SSUFLKWN) v1.1
 #Initial : 06 June 2020
 #v1.0 : 11 June 2020
+#v1.1 : 12 June 2020
 
 #This source code is licensed under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
 #https://creativecommons.org/licenses/by-sa/4.0
@@ -18,8 +19,17 @@ from os import system
 import subprocess
 import random
 import pathlib
+import keyboard
+#import time
+#import platform
 
 varCurrentVersion = 1.0
+"""
+if platform.release() == "10":
+    isWindows10 = True
+else:
+    isWindows10 = False
+"""
 
 while(1):
     print("Sodiumworks Flashkey ver " + str(varCurrentVersion) + "\n")
@@ -111,10 +121,34 @@ while(1):
             fileSettingAutostart = open(varLocalAppdata + "\\SSUFLKWN\\settingAutostart", "w")
             fileSettingAutostart.close()
     
+    """
+    #Windows 10 PIN setup:
+    if (os.path.exists(varLocalAppdata + "\\SSUFLKWN\\settingPIN") == False) and (isWindows10 == True):
+        settingPIN = ""
+        while settingPIN == "":
+            system("cls")
+            print("Once your computer is locked, even after you insert your key drive,\nyou will still need to unlock your computer normally.\nInstead of that, if you enter your Windows login code,\nFlashkey can unlock your computer for you once you insert your key drive.\nHowever, this login code will be stored without encryption.\nThat's why if you have a Microsoft account set up, you should set up a PIN code instead of using your Microsoft account password.")
+            settingPIN = input("Do you want to use this feature? (Y/N): ")
+            if settingPIN == ("y" or "Y"):
+                windowsPIN = input("Enter your login code (PIN code or password): ")
+            elif settingPIN == ("n" or "N"):
+                pass
+            else:
+                print("Wrong input. Type y or n.")
+                settingPIN = ""
+        if "windowsPIN" in locals():
+            fileSettingPIN = open(varLocalAppdata + "\\SSUFLKWN\\settingPIN", "w")
+            fileSettingPIN.write(str(windowsPIN))
+            fileSettingPIN.close()
+        else:
+            fileSettingPIN = open(varLocalAppdata + "\\SSUFLKWN\\settingPIN", "w")
+            fileSettingPIN.close()
+    """
     counter = 0
     
     system("cls")
     print("Sodiumworks Flashkey ver " + str(varCurrentVersion) + "\nThe program is now running.\nIf you remove the drive with the key, the computer will lock\nuntil you plug it back again.\n\nTo change settings, delete the deleteToChangeFlashkeySettings file in the drive\nthat has your key file while this program is still running.\nBe careful not to delete your key file.\n\nThis program needs to be running in the background to function, so just minimize it.")
+    isLocked = False
     while(1):
         listDrives = win32api.GetLogicalDriveStrings()
         listDrives = listDrives.split("\000")[:-1]
@@ -125,12 +159,18 @@ while(1):
             test = os.path.exists(listDrives[counter])
         except IndexError:
             subprocess.run(["rundll32.exe ", "user32.dll,LockWorkStation"])
+            isLocked = True
             counter = 0
-            
-        if  (test != None) and (os.path.exists(listDrives[counter] + fileSettingKeyfileName) == True):
+        if (test != None) and (os.path.exists(listDrives[counter] + fileSettingKeyfileName) == True):
             fileOnDrive = listDrives[counter]
             fileOnDrive = fileOnDrive[:-1]
-            if not os.path.exists(fileOnDrive + "deleteToChangeFlashkeySettings"):
+            if isLocked == True:
+                keyboard.press_and_release('enter')
+                #time.sleep(1)
+                #keyboard.write(str(windowsPIN))
+                #keyboard.press_and_release('enter')
+                isLocked = False
+            if (os.path.exists(fileOnDrive + "deleteToChangeFlashkeySettings") == False) and (os.path.exists(fileOnDrive) == True):
                 break
             counter = 0
         else:
